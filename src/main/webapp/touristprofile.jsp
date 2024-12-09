@@ -1,9 +1,10 @@
-<%@page import="com.klef.jfsd.sdpproject.model.Tourist"%>
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="com.klef.jfsd.sdpproject.model.Tourist" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib uri="jakarta.tags.core" prefix="c" %>
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="UTF-8">
     <title>Tourist Profile - Tourism Management System</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
@@ -20,7 +21,6 @@
             display: flex;
         }
 
-        /* Vertical Navbar Styles */
         .navbar {
             width: 250px;
             background: linear-gradient(180deg, #2c3e50 0%, #2c3e50 100%);
@@ -31,19 +31,6 @@
             padding-top: 20px;
             color: white;
             box-shadow: 4px 0 10px rgba(0,0,0,0.1);
-        }
-
-        .navbar-brand {
-            text-align: center;
-            padding: 20px 15px;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-            margin-bottom: 20px;
-        }
-
-        .navbar-brand h2 {
-            color: white;
-            font-size: 1.2em;
-            line-height: 1.4;
         }
 
         .navbar a {
@@ -58,11 +45,6 @@
             gap: 10px;
         }
 
-        .navbar a i {
-            width: 20px;
-            text-align: center;
-        }
-
         .navbar a:hover {
             background: rgba(255,255,255,0.1);
             padding-left: 30px;
@@ -72,12 +54,10 @@
             background: #3498db;
         }
 
-        /* Main Content Area */
         .main-content {
             flex: 1;
             margin-left: 250px;
             padding: 20px;
-            background-color: #f5f7fb;
         }
 
         .profile-container {
@@ -162,146 +142,51 @@
                 padding-top: 10px;
             }
 
-            .navbar-brand {
-                padding: 10px 5px;
-            }
-
-            .navbar-brand h2 {
-                display: none;
-            }
-
-            .navbar a span {
-                display: none;
-            }
-
-            .navbar a {
-                padding: 15px;
-                justify-content: center;
-            }
-
-            .navbar a:hover {
-                padding-left: 15px;
-            }
-
             .main-content {
                 margin-left: 70px;
             }
         }
     </style>
-    <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ taglib uri="jakarta.tags.core" prefix="c" %>
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<title>Booking Confirmation</title>
-</head>
-<body>
-<%@ include file="touristnavbar.jsp" %>
-
-<h3 style="text-align: center;"><u>Booking Confirmation</u></h3>
-
-<!-- Show the confirmation details after form submission -->
-<c:set var="spotId" value="${param.spotId}" />
-<!-- Fetch Spot Information from backend (mocked for now) -->
-<!-- You would fetch the spot details from your database using the spotId -->
-<c:set var="spot" value="${spots[spotId]}" /> <!-- Mocked list for demonstration -->
-
-<!-- Confirmation Message -->
-<div style="text-align: center; margin-top: 30px;">
-    <h4>Thank you for your booking, ${param.name}!</h4>
-    <p>Your booking details are as follows:</p>
-    <table style="margin-top: 20px; margin-left: auto; margin-right: auto;">
-        <tr>
-            <td><strong>Spot:</strong></td>
-            <td><c:out value="${spot.spotname}"/></td>
-        </tr>
-        <tr>
-            <td><strong>Country:</strong></td>
-            <td><c:out value="${spot.country}"/></td>
-        </tr>
-        <tr>
-            <td><strong>State:</strong></td>
-            <td><c:out value="${spot.state}"/></td>
-        </tr>
-        <tr>
-            <td><strong>Booking Date:</strong></td>
-            <td><c:out value="${param.date}"/></td>
-        </tr>
-        <tr>
-            <td><strong>Name:</strong></td>
-            <td><c:out value="${param.name}"/></td>
-        </tr>
-        <tr>
-            <td><strong>Email:</strong></td>
-            <td><c:out value="${param.email}"/></td>
-        </tr>
-    </table>
-    <p>Your booking has been successfully confirmed!</p>
-
-    <!-- Optionally, you can provide a link to go back to the home page or the spot view page -->
-    <div style="margin-top: 20px;">
-        <button onclick="window.location.href='bookspots.jsp'">View All Spots</button>
-        <button onclick="window.location.href='touristhome.jsp'">Go to Home</button>
-    </div>
-</div>
-
-</body>
-</html>
-    
 </head>
 <body>
     <%
-    // Check for session and tourist object
-    Tourist tourist = null;
-    boolean sessionValid = false;
-    try {
-        tourist = (Tourist) session.getAttribute("tourist");
-        if (tourist != null) {
-            sessionValid = true;
-        }
-    } catch (Exception e) {
-        sessionValid = false;
-    }
+        // Validate session and retrieve tourist details
+        Tourist tourist = (Tourist) session.getAttribute("tourist");
+        boolean sessionValid = (tourist != null);
 
-    // If session is invalid, redirect to session expiry page
-    if (!sessionValid) {
-        response.sendRedirect("touristsessionexpiry");
-        return;
-    }
+        if (!sessionValid) {
+            response.sendRedirect("touristsessionexpiry");
+            return;
+        }
     %>
 
     <% if (sessionValid) { %>
         <%@ include file="touristnavbar.jsp" %>
-
         <div class="main-content">
             <div class="profile-container">
                 <div class="profile-card">
                     <div class="profile-header">
                         <h1>My Profile</h1>
                     </div>
-                    
                     <div class="profile-details">
                         <div class="label">Tourist ID:</div>
                         <div class="value"><%= tourist.getId() %></div>
-                        
+
                         <div class="label">Name:</div>
                         <div class="value"><%= tourist.getName() %></div>
-                        
+
                         <div class="label">Gender:</div>
                         <div class="value"><%= tourist.getGender() %></div>
-                        
+
                         <div class="label">Date of Birth:</div>
                         <div class="value"><%= tourist.getDateofbirth() %></div>
-                        
+
                         <div class="label">Email:</div>
                         <div class="value"><%= tourist.getEmail() %></div>
-                        
+
                         <div class="label">Contact:</div>
                         <div class="value"><%= tourist.getContact() %></div>
                     </div>
-
-                    
                 </div>
             </div>
         </div>

@@ -247,7 +247,7 @@
     </style>
     <script>
         // Set the session timeout to 15 minutes (900,000 milliseconds)
-        const sessionTimeout = 60 * 1000; // 15 minutes in milliseconds
+        const sessionTimeout = 45 * 1000; // 15 minutes in milliseconds
 
         // Function to handle session expiry
         function handleSessionExpiry() {

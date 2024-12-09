@@ -3,12 +3,12 @@
 <html>
 <head>
     <script>
-    const sessionTimeout = 45 * 1000; // 15 minutes in milliseconds
+    const sessionTimeout = 15 * 60 * 1000; // 15 minutes in milliseconds
 
     // Function to handle session expiry
     function handleSessionExpiry() {
         alert("Your session has expired due to inactivity.");
-        window.location.href = '/touristlogin'; // Redirect to the login page after session expires
+        window.location.href = '/adminlogin'; // Redirect to the admin login page after session expires
     }
 
     // Set a timer to call the function after 15 minutes
@@ -150,20 +150,17 @@
             }
         }
     </style>
-    
 </head>
 <body>
-     <%@include file="adminnavbar.jsp" %>
-    <h3 style="text-align: center;"><u>View All Tourist</u></h3>
+    <%@include file="adminnavbar.jsp" %>
+    <h3 style="text-align: center;"><u>View All Tourists</u></h3>
     <table>
         <tr>
             <th>ID</th>
             <th>NAME</th>
             <th>GENDER</th>
             <th>DATE OF BIRTH</th>
-            
             <th>EMAIL</th>
-
             <th>CONTACT</th>
         </tr>
         <c:forEach items="${tourlist}" var="tour">
@@ -172,11 +169,8 @@
                 <td><c:out value="${tour.name}"/></td>
                 <td><c:out value="${tour.gender}"/></td>
                 <td><c:out value="${tour.dateofbirth}"/></td>
-   
-             
                 <td><c:out value="${tour.email}"/></td>
                 <td><c:out value="${tour.contact}"/></td>
-       
             </tr>
         </c:forEach>
     </table>

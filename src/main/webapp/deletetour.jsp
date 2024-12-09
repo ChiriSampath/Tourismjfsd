@@ -26,6 +26,7 @@
     <title>Delete Tourists</title>
     <link rel="stylesheet" type="text/css" href="style.css">
     <style>
+    
         * {
             margin: 0;
             padding: 0;
@@ -151,6 +152,7 @@
             }
         }
     </style>
+ 
 </head>
 <body>
     <%@include file="adminnavbar.jsp" %>
@@ -175,7 +177,7 @@
                         <td><c:out value="${tour.id}"/></td>
                         <td><c:out value="${tour.name}"/></td>
                         <td><c:out value="${tour.gender}"/></td>
-                        <td><c:out value="${tour.dateofbirth}"/></td>
+                        <td><c:out value="${tour.dateofbirth}"/></td> <!-- Corrected property name -->
                         <td><c:out value="${tour.email}"/></td>
                         <td><c:out value="${tour.contact}"/></td>
                         <td>

@@ -1,6 +1,5 @@
 package com.klef.jfsd.sdpproject.controller;
 
-import java.io.IOException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,148 +18,144 @@ import com.klef.jfsd.sdpproject.repository.TouristRepository;
 import com.klef.jfsd.sdpproject.service.AdminService;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class AdminController {
+
     @Autowired
     private AdminService adminService;
 
     @Autowired
-    private SpotsRepository touristSpotRepository;
+    private SpotsRepository spotsRepository;
 
     @Autowired
     private TouristRepository touristRepository;
 
+    // Admin Login
     @GetMapping("adminlogin")
-    public ModelAndView adminlogin() {
-        ModelAndView mv = new ModelAndView();
-        mv.setViewName("adminlogin");
-        return mv;
+    public String adminLogin() {
+        return "adminlogin";
     }
 
+    // Admin Home
     @GetMapping("adminhome")
-    public ModelAndView adminhome() {
-        ModelAndView mv = new ModelAndView();
-        mv.setViewName("adminhome");
-        return mv;
+    public String adminHome() {
+        return "adminhome";
     }
 
+    // Admin Logout
     @GetMapping("adminlogout")
-    public ModelAndView adminlogout() {
-        ModelAndView mv = new ModelAndView();
-        mv.setViewName("adminlogin");
+    public ModelAndView adminLogout(HttpSession session) {
+        session.invalidate(); // Invalidate the session
+        ModelAndView mv = new ModelAndView("adminlogin");
+        mv.addObject("message", "You have been logged out successfully.");
         return mv;
     }
 
+    // Check Admin Login
     @PostMapping("checkadminlogin")
-    public ModelAndView checkadminlogin(HttpServletRequest request) {
+    public ModelAndView checkAdminLogin(@RequestParam("auname") String username,
+                                        @RequestParam("apwd") String password,
+                                        HttpServletRequest request) {
         ModelAndView mv = new ModelAndView();
+        Admin admin = adminService.checkadminlogin(username, password);
 
-        String auname = request.getParameter("auname");
-        String apwd = request.getParameter("apwd");
-
-        Admin admin = adminService.checkadminlogin(auname, apwd);
         if (admin != null) {
+            HttpSession session = request.getSession();
+            session.setAttribute("admin", admin);
             mv.setViewName("adminhome");
         } else {
-            mv.setViewName("adminloginfail");
-            mv.addObject("message", "Login Failed");
+            mv.setViewName("adminlogin");
+            mv.addObject("message", "Login Failed: Invalid credentials.");
         }
         return mv;
     }
 
+    // Add Spots Page
     @GetMapping("addspots")
-    public ModelAndView addspots() {
-        ModelAndView mv = new ModelAndView("addspots");
-        return mv;
+    public String addSpotsPage() {
+        return "addspots";
     }
 
+    // Insert Spot
     @PostMapping("insertspot")
-    public ModelAndView insertspot(HttpServletRequest request) {
-        String msg = null;
+    public ModelAndView insertSpot(@RequestParam("spot_country") String country,
+                                    @RequestParam("spot_state") String state,
+                                    @RequestParam("spot_name") String spotName) {
         ModelAndView mv = new ModelAndView();
 
         try {
-            String Country = request.getParameter("spot_country");
-            String State = request.getParameter("spot_state");
-            String Spotname = request.getParameter("spot_name");
-
-            if (Country == null || Country.trim().isEmpty()) {
-                throw new IllegalArgumentException("Country cannot be empty.");
-            }
-            if (State == null || State.trim().isEmpty()) {
-                throw new IllegalArgumentException("State cannot be empty.");
-            }
-            if (Spotname == null || Spotname.trim().isEmpty()) {
-                throw new IllegalArgumentException("Spotname cannot be empty.");
+            if (country.isEmpty() || state.isEmpty() || spotName.isEmpty()) {
+                throw new IllegalArgumentException("All fields are required.");
             }
 
-            Spots s = new Spots();
-            s.setCountry(Country);
-            s.setState(State);
-            s.setSpotname(Spotname);
+            Spots spot = new Spots();
+            spot.setCountry(country);
+            spot.setState(state);
+            spot.setSpotname(spotName);
 
-            msg = adminService.AddSpot(s);
+            String message = adminService.AddSpot(spot);
             mv.setViewName("spotmsg");
-            mv.addObject("message", msg);
+            mv.addObject("message", message);
         } catch (IllegalArgumentException e) {
-            msg = e.getMessage();
             mv.setViewName("spoterror");
-            mv.addObject("message", msg);
+            mv.addObject("message", e.getMessage());
         } catch (Exception e) {
-            msg = e.getMessage();
             mv.setViewName("spoterror");
-            mv.addObject("message", msg);
+            mv.addObject("message", "An unexpected error occurred: " + e.getMessage());
         }
 
         return mv;
     }
 
-    @PostMapping("addspotsuccess")
-    public ModelAndView addspotsuccess() {
-        ModelAndView mv = new ModelAndView();
-        mv.setViewName("addspotsuccess");
-        return mv;
+    // Add Spot Success
+    @PostMapping("/addspotsuccess")
+    public String addSpotSuccess() {
+        return "addspotsuccess";
     }
 
+    // View All Tourists
     @GetMapping("viewalltourists")
-    public ModelAndView viewalltourists() {
-        ModelAndView mv = new ModelAndView();
-        List<Tourist> tourlist = adminService.viewalltourists();
-        mv.setViewName("viewalltourists");
-        mv.addObject("tourlist", tourlist);
+    public ModelAndView viewAllTourists() {
+        List<Tourist> touristList = adminService.viewalltourists();
+        ModelAndView mv = new ModelAndView("viewalltourists");
+        mv.addObject("tourlist", touristList);
         return mv;
     }
 
+    // Delete Tourist Page
     @GetMapping("deletetour")
-    public ModelAndView deletetour() {
-        ModelAndView mv = new ModelAndView();
-        List<Tourist> tourlist = adminService.viewalltourists();
-        mv.setViewName("deletetour");
-        mv.addObject("tourlist", tourlist);
+    public ModelAndView deleteTourPage() {
+        List<Tourist> touristList = adminService.viewalltourists();
+        ModelAndView mv = new ModelAndView("deletetour");
+        mv.addObject("tourlist", touristList);
         return mv;
     }
 
+    // Delete Operation
     @GetMapping("delete")
-    public String deleteoperation(@RequestParam("id") int tid) {
-        adminService.deletetour(tid);
+    public String deleteTourist(@RequestParam("id") int touristId) {
+        adminService.deletetour(touristId);
         return "redirect:/deletetour";
     }
 
+    // API: Total Tourist Spots
     @GetMapping("/api/total-tourist-spots")
     public long getTotalTouristSpots() {
-        return touristSpotRepository.count(); // This will return the count of spots
+        return spotsRepository.count();
     }
 
+    // API: Total Tourists
     @GetMapping("/api/total-tourists")
     public long getTotalTourists() {
-        return touristRepository.count(); // This will return the count of tourists
+        return touristRepository.count();
     }
 
+    // Session Timeout Handler
     @GetMapping("/session-timeout")
     public ModelAndView sessionTimeout() {
-        ModelAndView mv = new ModelAndView();
-        mv.setViewName("adminlogin");
+        ModelAndView mv = new ModelAndView("adminlogin");
         mv.addObject("message", "Your session has expired. Please log in again.");
         return mv;
     }

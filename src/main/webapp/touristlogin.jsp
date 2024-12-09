@@ -225,10 +225,9 @@
             }
         }
     </style>
-    
 </head>
 <body>
-    <%@include file="mainnavbar.jsp" %>
+    <%@ include file="mainnavbar.jsp" %>
     <h3><u>Tourist Login</u></h3>
 
     <h4 align="center" style="color:red">
